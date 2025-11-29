@@ -15,17 +15,24 @@ import { UpdateStudyHabitDto } from './dto/update-study-habit.dto';
 import { CreatePhysicalEntryDto } from './dto/create-physical-entry.dto';
 import { CreateReadEntryDto } from './dto/create-read-entry.dto';
 import { CreateCustomEntryDto } from './dto/create-custom-entry.dto';
+import { CompleteDayDto } from './dto/complete-day.dto';
 
 @Injectable()
 export class HabitsService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async setSleepHabit(dto: UpdateSleepHabitDto) {
-    const { username, bedTime, wakeTime } = dto;
+  private toDateString(d: Date): string {
+    return d.toISOString().slice(0, 10);
+  }
 
-    const user = await this.userModel.findOne({ username }).exec();
-    if (!user) throw new NotFoundException(`User "${username}" not found`);
+  private diffDays(a: string, b: string): number {
+    const da = new Date(a + 'T00:00:00Z');
+    const db = new Date(b + 'T00:00:00Z');
+    const msPerDay = 24 * 60 * 60 * 1000;
+    return Math.round((db.getTime() - da.getTime()) / msPerDay);
+  }
 
+  private ensureHabits(user: UserDocument) {
     if (!user.habits) {
       user.habits = {
         sleep: null,
@@ -35,6 +42,18 @@ export class HabitsService {
         custom: [],
       };
     }
+    if (!user.habits.physical) user.habits.physical = [];
+    if (!user.habits.read) user.habits.read = [];
+    if (!user.habits.custom) user.habits.custom = [];
+  }
+
+  async setSleepHabit(dto: UpdateSleepHabitDto) {
+    const { username, bedTime, wakeTime } = dto;
+
+    const user = await this.userModel.findOne({ username }).exec();
+    if (!user) throw new NotFoundException(`User "${username}" not found`);
+
+    this.ensureHabits(user);
 
     const habit: SleepHabit = { bedTime, wakeTime };
     user.habits.sleep = habit;
@@ -62,15 +81,7 @@ export class HabitsService {
     const user = await this.userModel.findOne({ username }).exec();
     if (!user) throw new NotFoundException(`User "${username}" not found`);
 
-    if (!user.habits) {
-      user.habits = {
-        sleep: null,
-        study: null,
-        physical: [],
-        read: [],
-        custom: [],
-      };
-    }
+    this.ensureHabits(user);
 
     const study: StudyHabit = {
       pomodoroCount,
@@ -104,19 +115,7 @@ export class HabitsService {
     const user = await this.userModel.findOne({ username }).exec();
     if (!user) throw new NotFoundException(`User "${username}" not found`);
 
-    if (!user.habits) {
-      user.habits = {
-        sleep: null,
-        study: null,
-        physical: [],
-        read: [],
-        custom: [],
-      };
-    }
-
-    if (!user.habits.physical) {
-      user.habits.physical = [];
-    }
+    this.ensureHabits(user);
 
     const entry: PhysicalEntry = {
       activity,
@@ -150,19 +149,7 @@ export class HabitsService {
     const user = await this.userModel.findOne({ username }).exec();
     if (!user) throw new NotFoundException(`User "${username}" not found`);
 
-    if (!user.habits) {
-      user.habits = {
-        sleep: null,
-        study: null,
-        physical: [],
-        read: [],
-        custom: [],
-      };
-    }
-
-    if (!user.habits.read) {
-      user.habits.read = [];
-    }
+    this.ensureHabits(user);
 
     const entry: ReadEntry = {
       bookTitle,
@@ -196,19 +183,7 @@ export class HabitsService {
     const user = await this.userModel.findOne({ username }).exec();
     if (!user) throw new NotFoundException(`User "${username}" not found`);
 
-    if (!user.habits) {
-      user.habits = {
-        sleep: null,
-        study: null,
-        physical: [],
-        read: [],
-        custom: [],
-      };
-    }
-
-    if (!user.habits.custom) {
-      user.habits.custom = [];
-    }
+    this.ensureHabits(user);
 
     const entry: CustomHabit = {
       id,
@@ -258,6 +233,92 @@ export class HabitsService {
     return {
       username: user.username,
       habits,
+    };
+  }
+
+  async completeDay(dto: CompleteDayDto) {
+    const { username } = dto;
+    let { date } = dto;
+
+    const user = await this.userModel.findOne({ username }).exec();
+    if (!user) throw new NotFoundException(`User "${username}" not found`);
+
+    if (!date) {
+      date = this.toDateString(new Date());
+    }
+
+    if (user.lastCompletedDate === date) {
+      return {
+        username: user.username,
+        currentStreak: user.currentStreak,
+        level: user.level,
+        lastCompletedDate: user.lastCompletedDate,
+        totalPoints: user.totalPoints,
+      };
+    }
+
+    let newStreak = 1;
+
+    if (user.lastCompletedDate) {
+      const diff = this.diffDays(user.lastCompletedDate, date);
+
+      if (diff === 1) {
+        newStreak = user.currentStreak + 1;
+      } else {
+        newStreak = 1;
+      }
+    }
+
+    user.currentStreak = newStreak;
+    user.lastCompletedDate = date;
+
+    if (!user.completedDays) {
+      user.completedDays = [];
+    }
+    user.completedDays.push({ date });
+
+    if (newStreak > 0 && newStreak % 2 === 0) {
+      user.level += 1;
+    }
+
+    user.totalPoints = (user.totalPoints || 0) + 10;
+
+    await user.save();
+
+    return {
+      username: user.username,
+      currentStreak: user.currentStreak,
+      level: user.level,
+      lastCompletedDate: user.lastCompletedDate,
+      totalPoints: user.totalPoints,
+    };
+  }
+
+  async getStreakInfo(username: string) {
+    const user = await this.userModel
+      .findOne(
+        { username },
+        {
+          username: 1,
+          currentStreak: 1,
+          level: 1,
+          lastCompletedDate: 1,
+          totalPoints: 1,
+          _id: 0,
+        },
+      )
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User "${username}" not found`);
+    }
+
+    return {
+      username: user.username,
+      currentStreak: user.currentStreak || 0,
+      level: user.level || 1,
+      lastCompletedDate: user.lastCompletedDate || null,
+      totalPoints: user.totalPoints || 0,
     };
   }
 }
