@@ -42,29 +42,18 @@ export class ReadEntry {
 export const ReadEntrySchema = SchemaFactory.createForClass(ReadEntry);
 
 @Schema({ _id: false })
-export class CustomHabitEntry {
-  @Prop({ required: true })
-  value: number;
-
-  @Prop()
-  note?: string;
-}
-export const CustomHabitEntrySchema =
-  SchemaFactory.createForClass(CustomHabitEntry);
-
-@Schema({ _id: false })
 export class CustomHabit {
   @Prop({ required: true })
-  id: string;
+  id: string; // généré côté front (uuid, slug, etc.)
 
   @Prop({ required: true })
-  name: string;
+  name: string; // "Drink water"
+
+  @Prop({ required: true })
+  value: number; // 8
 
   @Prop()
-  unit?: string;
-
-  @Prop({ type: [CustomHabitEntrySchema], default: [] })
-  entries: CustomHabitEntry[];
+  unit?: string; // "glasses", "minutes", etc.
 }
 export const CustomHabitSchema = SchemaFactory.createForClass(CustomHabit);
 
