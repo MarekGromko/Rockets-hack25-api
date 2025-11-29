@@ -44,16 +44,16 @@ export const ReadEntrySchema = SchemaFactory.createForClass(ReadEntry);
 @Schema({ _id: false })
 export class CustomHabit {
   @Prop({ required: true })
-  id: string; // généré côté front (uuid, slug, etc.)
+  id: string; // généré côté front (slug, uuid, etc.)
 
   @Prop({ required: true })
-  name: string; // "Drink water"
+  name: string;
 
   @Prop({ required: true })
-  value: number; // 8
+  value: number;
 
   @Prop()
-  unit?: string; // "glasses", "minutes", etc.
+  unit?: string;
 }
 export const CustomHabitSchema = SchemaFactory.createForClass(CustomHabit);
 

@@ -1,15 +1,22 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { HabitsModule } from './habits/habits.module';
+import { AnalysisModule } from './analysis/analysis.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
     MongooseModule.forRoot(
-      process.env.MONGO_URI || 'mongodb://localhost:27017/rockets-hack25',
+      process.env.MONGO_URI || 'mongodb://localhost:27017/habits-app',
     ),
     UsersModule,
     HabitsModule,
+    AnalysisModule,
   ],
 })
 export class AppModule {}
