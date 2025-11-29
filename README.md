@@ -96,3 +96,27 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## Karo
+
+```bash
+  npm install @nestjs/config
+  npm install @google/generative-ai
+  npm install -g @nestjs/cli
+  npm install @nestjs/mongoose mongoose
+  npm install --save-dev @types/mongoose
+
+  nest g module users
+  nest g service users
+  nest g controller users
+
+  nest g module habits
+  nest g service habits
+  nest g controller habits
+
+  nest g module analysis
+  nest g service analysis
+  nest g controller analysis
+
+```
