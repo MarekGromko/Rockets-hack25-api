@@ -104,8 +104,12 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
   npm install -g @nestjs/cli
   npm install @nestjs/mongoose mongoose
   npm install --save-dev @types/mongoose
+
   nest g module users
   nest g service users
   nest g controller users
 
+  nest g module habits
+  nest g service habits
+  nest g controller habits
 ```
