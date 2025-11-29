@@ -237,4 +237,27 @@ export class HabitsService {
       custom: user.habits?.custom || [],
     };
   }
+
+  async getAllHabits(username: string) {
+    const user = await this.userModel
+      .findOne({ username }, { habits: 1, username: 1, _id: 0 })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User "${username}" not found`);
+    }
+
+    const habits = user.habits || {
+      sleep: null,
+      study: null,
+      physical: [],
+      read: [],
+      custom: [],
+    };
+
+    return {
+      username: user.username,
+      habits,
+    };
+  }
 }
