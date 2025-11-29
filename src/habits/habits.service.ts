@@ -6,9 +6,11 @@ import {
   UserDocument,
   SleepHabit,
   StudyHabit,
+  PhysicalEntry,
 } from '../users/schemas/user.schema';
 import { UpdateSleepHabitDto } from './dto/update-sleep-habit.dto';
 import { UpdateStudyHabitDto } from './dto/update-study-habit.dto';
+import { CreatePhysicalEntryDto } from './dto/create-physical-entry.dto';
 
 @Injectable()
 export class HabitsService {
@@ -37,10 +39,17 @@ export class HabitsService {
     return habit;
   }
 
-  getSleepHabit(username: string) {
-    return this.userModel
+  async getSleepHabit(username: string) {
+    const user = await this.userModel
       .findOne({ username }, { 'habits.sleep': 1, username: 1, _id: 0 })
       .exec();
+
+    if (!user) throw new NotFoundException(`User "${username}" not found`);
+
+    return {
+      username: user.username,
+      sleep: user.habits?.sleep || null,
+    };
   }
 
   async setStudyHabit(dto: UpdateStudyHabitDto) {
@@ -64,7 +73,7 @@ export class HabitsService {
       totalMinutes,
     };
 
-    user.habits.study = [study];
+    user.habits.study = study;
 
     await user.save();
     return study;
@@ -82,6 +91,52 @@ export class HabitsService {
     return {
       username: user.username,
       study: user.habits?.study || null,
+    };
+  }
+
+  async addPhysicalEntry(dto: CreatePhysicalEntryDto) {
+    const { username, activity, durationMinutes } = dto;
+
+    const user = await this.userModel.findOne({ username }).exec();
+    if (!user) throw new NotFoundException(`User "${username}" not found`);
+
+    if (!user.habits) {
+      user.habits = {
+        sleep: null,
+        study: null,
+        physical: [],
+        read: [],
+        custom: [],
+      };
+    }
+
+    if (!user.habits.physical) {
+      user.habits.physical = [];
+    }
+
+    const entry: PhysicalEntry = {
+      activity,
+      durationMinutes,
+    };
+
+    user.habits.physical.push(entry);
+
+    await user.save();
+    return entry;
+  }
+
+  async getPhysicalEntries(username: string) {
+    const user = await this.userModel
+      .findOne({ username }, { 'habits.physical': 1, username: 1, _id: 0 })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User "${username}" not found`);
+    }
+
+    return {
+      username: user.username,
+      physical: user.habits?.physical || [],
     };
   }
 }
