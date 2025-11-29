@@ -5,6 +5,7 @@ import { UpdateStudyHabitDto } from './dto/update-study-habit.dto';
 import { CreatePhysicalEntryDto } from './dto/create-physical-entry.dto';
 import { CreateReadEntryDto } from './dto/create-read-entry.dto';
 import { CreateCustomEntryDto } from './dto/create-custom-entry.dto';
+import { CompleteDayDto } from './dto/complete-day.dto';
 
 @Controller('habits')
 export class HabitsController {
@@ -63,5 +64,15 @@ export class HabitsController {
   @Get('all')
   getAll(@Query('username') username: string) {
     return this.habitsService.getAllHabits(username);
+  }
+
+  @Post('complete-day')
+  completeDay(@Body() dto: CompleteDayDto) {
+    return this.habitsService.completeDay(dto);
+  }
+
+  @Get('streak')
+  getStreak(@Query('username') username: string) {
+    return this.habitsService.getStreakInfo(username);
   }
 }

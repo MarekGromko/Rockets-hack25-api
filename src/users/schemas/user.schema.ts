@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema({ _id: false })
 export class SleepHabit {
   @Prop({ required: true })
-  bedTime: string;
+  bedTime: string; // "23:30"
 
   @Prop({ required: true })
-  wakeTime: string;
+  wakeTime: string; // "07:30"
 }
 export const SleepHabitSchema = SchemaFactory.createForClass(SleepHabit);
 
@@ -44,7 +44,7 @@ export const ReadEntrySchema = SchemaFactory.createForClass(ReadEntry);
 @Schema({ _id: false })
 export class CustomHabit {
   @Prop({ required: true })
-  id: string; // généré côté front (slug, uuid, etc.)
+  id: string;
 
   @Prop({ required: true })
   name: string;
@@ -75,6 +75,13 @@ export class GeminiReport {
   rawContent?: string;
 }
 export const GeminiReportSchema = SchemaFactory.createForClass(GeminiReport);
+
+@Schema({ _id: false })
+export class CompletedDay {
+  @Prop({ required: true })
+  date: string;
+}
+export const CompletedDaySchema = SchemaFactory.createForClass(CompletedDay);
 
 @Schema({ _id: false })
 export class Habits {
@@ -116,6 +123,15 @@ export class User {
 
   @Prop({ type: [GeminiReportSchema], default: [] })
   geminiReports: GeminiReport[];
+
+  @Prop({ type: [CompletedDaySchema], default: [] })
+  completedDays: CompletedDay[];
+
+  @Prop({ default: 0 })
+  currentStreak: number;
+
+  @Prop()
+  lastCompletedDate?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
