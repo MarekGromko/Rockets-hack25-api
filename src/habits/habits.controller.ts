@@ -59,4 +59,9 @@ export class HabitsController {
   getCustom(@Query('username') username: string) {
     return this.habitsService.getCustomEntries(username);
   }
+
+  @Get('all')
+  getAll(@Query('username') username: string) {
+    return this.habitsService.getAllHabits(username);
+  }
 }
