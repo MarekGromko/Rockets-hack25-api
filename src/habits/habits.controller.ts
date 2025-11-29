@@ -3,6 +3,7 @@ import { HabitsService } from './habits.service';
 import { UpdateSleepHabitDto } from './dto/update-sleep-habit.dto';
 import { UpdateStudyHabitDto } from './dto/update-study-habit.dto';
 import { CreatePhysicalEntryDto } from './dto/create-physical-entry.dto';
+import { CreateReadEntryDto } from './dto/create-read-entry.dto';
 
 @Controller('habits')
 export class HabitsController {
@@ -36,5 +37,15 @@ export class HabitsController {
   @Get('physical')
   getPhysical(@Query('username') username: string) {
     return this.habitsService.getPhysicalEntries(username);
+  }
+
+  @Post('read')
+  addRead(@Body() dto: CreateReadEntryDto) {
+    return this.habitsService.addReadEntry(dto);
+  }
+
+  @Get('read')
+  getRead(@Query('username') username: string) {
+    return this.habitsService.getReadEntries(username);
   }
 }
