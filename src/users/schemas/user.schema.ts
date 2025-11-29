@@ -12,17 +12,14 @@ export class SleepHabit {
 export const SleepHabitSchema = SchemaFactory.createForClass(SleepHabit);
 
 @Schema({ _id: false })
-export class StudyEntry {
-  @Prop({ required: true })
-  date: Date;
-
+export class StudyHabit {
   @Prop({ required: true })
   pomodoroCount: number;
 
   @Prop()
   totalMinutes?: number;
 }
-export const StudyEntrySchema = SchemaFactory.createForClass(StudyEntry);
+export const StudyHabitSchema = SchemaFactory.createForClass(StudyHabit);
 
 @Schema({ _id: false })
 export class PhysicalEntry {
@@ -104,17 +101,17 @@ export class Habits {
   @Prop({ type: SleepHabitSchema, default: null })
   sleep: SleepHabit | null;
 
-  @Prop({ type: [StudyEntrySchema], default: [] })
-  study: StudyEntry[];
+  @Prop({ type: [StudyHabitSchema], default: null })
+  study: StudyHabit[] | null;
 
-  @Prop({ type: [PhysicalEntrySchema], default: [] })
-  physical: PhysicalEntry[];
+  @Prop({ type: [PhysicalEntrySchema], default: null })
+  physical: PhysicalEntry[] | null;
 
-  @Prop({ type: [ReadEntrySchema], default: [] })
-  read: ReadEntry[];
+  @Prop({ type: [ReadEntrySchema], default: null })
+  read: ReadEntry[] | null;
 
-  @Prop({ type: [CustomHabitSchema], default: [] })
-  custom: CustomHabit[];
+  @Prop({ type: [CustomHabitSchema], default: null })
+  custom: CustomHabit[] | null;
 }
 export const HabitsSchema = SchemaFactory.createForClass(Habits);
 
