@@ -2,17 +2,14 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ _id: false })
-export class SleepEntry {
+export class SleepHabit {
   @Prop({ required: true })
-  date: Date;
+  bedTime: string;
 
   @Prop({ required: true })
-  bedTime: Date;
-
-  @Prop({ required: true })
-  wakeTime: Date;
+  wakeTime: string;
 }
-export const SleepEntrySchema = SchemaFactory.createForClass(SleepEntry);
+export const SleepHabitSchema = SchemaFactory.createForClass(SleepHabit);
 
 @Schema({ _id: false })
 export class StudyEntry {
@@ -104,8 +101,8 @@ export const GeminiReportSchema = SchemaFactory.createForClass(GeminiReport);
 
 @Schema({ _id: false })
 export class Habits {
-  @Prop({ type: [SleepEntrySchema], default: [] })
-  sleep: SleepEntry[];
+  @Prop({ type: SleepHabitSchema, default: null })
+  sleep: SleepHabit | null;
 
   @Prop({ type: [StudyEntrySchema], default: [] })
   study: StudyEntry[];
@@ -145,5 +142,4 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-//UserSchema.index({ username: 1 }, { unique: true });
+UserSchema.index({ username: 1 }, { unique: true });
