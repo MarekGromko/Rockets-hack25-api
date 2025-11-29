@@ -24,9 +24,6 @@ export const StudyHabitSchema = SchemaFactory.createForClass(StudyHabit);
 @Schema({ _id: false })
 export class PhysicalEntry {
   @Prop({ required: true })
-  date: Date;
-
-  @Prop({ required: true })
   activity: string;
 
   @Prop({ required: true })
@@ -37,9 +34,6 @@ export const PhysicalEntrySchema = SchemaFactory.createForClass(PhysicalEntry);
 @Schema({ _id: false })
 export class ReadEntry {
   @Prop({ required: true })
-  date: Date;
-
-  @Prop({ required: true })
   bookTitle: string;
 
   @Prop({ required: true })
@@ -49,9 +43,6 @@ export const ReadEntrySchema = SchemaFactory.createForClass(ReadEntry);
 
 @Schema({ _id: false })
 export class CustomHabitEntry {
-  @Prop({ required: true })
-  date: Date;
-
   @Prop({ required: true })
   value: number;
 
@@ -101,17 +92,17 @@ export class Habits {
   @Prop({ type: SleepHabitSchema, default: null })
   sleep: SleepHabit | null;
 
-  @Prop({ type: [StudyHabitSchema], default: null })
-  study: StudyHabit[] | null;
+  @Prop({ type: StudyHabitSchema, default: null })
+  study: StudyHabit | null;
 
-  @Prop({ type: [PhysicalEntrySchema], default: null })
-  physical: PhysicalEntry[] | null;
+  @Prop({ type: [PhysicalEntrySchema], default: [] })
+  physical: PhysicalEntry[];
 
-  @Prop({ type: [ReadEntrySchema], default: null })
-  read: ReadEntry[] | null;
+  @Prop({ type: [ReadEntrySchema], default: [] })
+  read: ReadEntry[];
 
-  @Prop({ type: [CustomHabitSchema], default: null })
-  custom: CustomHabit[] | null;
+  @Prop({ type: [CustomHabitSchema], default: [] })
+  custom: CustomHabit[];
 }
 export const HabitsSchema = SchemaFactory.createForClass(Habits);
 

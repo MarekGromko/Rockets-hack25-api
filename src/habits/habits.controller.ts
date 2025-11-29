@@ -2,6 +2,7 @@ import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { HabitsService } from './habits.service';
 import { UpdateSleepHabitDto } from './dto/update-sleep-habit.dto';
 import { UpdateStudyHabitDto } from './dto/update-study-habit.dto';
+import { CreatePhysicalEntryDto } from './dto/create-physical-entry.dto';
 
 @Controller('habits')
 export class HabitsController {
@@ -25,5 +26,15 @@ export class HabitsController {
   @Get('study')
   getStudy(@Query('username') username: string) {
     return this.habitsService.getStudyHabit(username);
+  }
+
+  @Post('physical')
+  addPhysical(@Body() dto: CreatePhysicalEntryDto) {
+    return this.habitsService.addPhysicalEntry(dto);
+  }
+
+  @Get('physical')
+  getPhysical(@Query('username') username: string) {
+    return this.habitsService.getPhysicalEntries(username);
   }
 }
