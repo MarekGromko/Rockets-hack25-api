@@ -101,6 +101,8 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ## Karo
 
 ```bash
+  npm install @nestjs/config
+  npm install @google/generative-ai
   npm install -g @nestjs/cli
   npm install @nestjs/mongoose mongoose
   npm install --save-dev @types/mongoose
@@ -112,4 +114,9 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
   nest g module habits
   nest g service habits
   nest g controller habits
+
+  nest g module analysis
+  nest g service analysis
+  nest g controller analysis
+
 ```
